@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/30 13:17:47 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/07/04 14:32:33 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/06/30 17:24:21 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ int main(int argc, char **argv)
         return (1);
     }
     Bitcoin bitcoin(argv[1]);
-    bitcoin.parsing('|');
+    while (bitcoin.get_line() == 0)
+        ;
     bitcoin.print_map();
     return (0);
 }
