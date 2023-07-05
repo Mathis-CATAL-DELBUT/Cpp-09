@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/30 12:50:41 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/07/05 13:28:36 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/07/05 13:29:54 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ int Bitcoin::data_to_map()
         while (std::getline(file, line))
         {
             if (line.find(",") == std::string::npos)
-                return (std::cout << "Error : Invalid line, the format must be 'date,exchange_rate'"<< std::endl, 1);
+                return (std::cout << "Error : Bad input, the format must be 'date,exchange_rate'"<< std::endl, 1);
             std::string date = line.substr(0, line.find(","));
             std::string value = line.substr(line.find(",") + 1, line.size() + 1);
             double value_double;
