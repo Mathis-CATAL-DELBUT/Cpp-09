@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/30 12:50:41 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/07/05 13:15:44 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/07/05 13:28:36 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ int Bitcoin::data_to_map()
         while (std::getline(file, line))
         {
             if (line.find(",") == std::string::npos)
-                return (std::cout << "Error : Invalid line, the format must be 'date | value'"<< std::endl, 1);
+                return (std::cout << "Error : Invalid line, the format must be 'date,exchange_rate'"<< std::endl, 1);
             std::string date = line.substr(0, line.find(","));
             std::string value = line.substr(line.find(",") + 1, line.size() + 1);
             double value_double;
@@ -93,6 +93,8 @@ int lower_date(const std::map<std::string, double>& baseDeDonnees, const std::st
     
     if (it == baseDeDonnees.begin())
         return (std::cout << "Error : No data available for this date : " << date << std::endl, 1);
+    if (it->first != date)
+        --it;
     std::cout << date << " => " << value << " = " << it->second * value << std::endl;
     return (0);
 }
@@ -122,17 +124,17 @@ int Bitcoin::get_line()
         if (i != 0 && line.size() > 0)
         {
             if (line.find(" | ") == std::string::npos)
-                return (std::cout << "Error : Invalid line, the format must be 'date | value' => "<< line << std::endl, i++, 0);
+                return (std::cout << "Error : Invalid line, the format must be 'date | value' => '"<< line <<"'" << std::endl, i++, 0);
             std::string date = line.substr(0, line.find(" | "));
             std::string value = line.substr(line.find(" | ") + 3);
             for (size_t j = 0; j < value.length(); j++)
                 if (value[j] != '.' && !estChiffre(value[j]) && value[j] != '-')
-                    return (std::cout << "Error : Invalid format, the format must be 'yyyy-mm-dd | value' => "<< line << std::endl, i++, 0);
+                    return (std::cout << "Error : Bad input, the format must be 'yyyy-mm-dd | value' => '"<< line << "'" << std::endl, i++, 0);
             double value_double;
             std::stringstream iss(value);
             iss >> value_double;
             if (check_date(date) == false)
-                return (std::cout << "Error : Invalid format, the format must be 'yyyy-mm-dd | value' => "<< line << std::endl, i++, 0);
+                return (std::cout << "Error : Bad input, the format must be 'yyyy-mm-dd | value' => '"<< line << "'" << std::endl, i++, 0);
             if (value_double < 0)
                 return (std::cout << "Error : not a positive number."<< std::endl, i++, 0);
             if (value_double > 1000)
