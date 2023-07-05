@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/30 12:50:41 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/07/05 13:47:34 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/07/05 14:54:24 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,17 @@ Bitcoin::Bitcoin() {}
 
 Bitcoin::Bitcoin(const char* input) : input(input) {}
 
-// Bitcoin::Bitcoin(std::string input, Bitcoin const &copy)
-// {
-//     if (this != &copy)
-//     {
-//         this->input = copy.input;
-//     }std::cout << "value : '" << value << "'" << std::endl;
-// }
+Bitcoin::Bitcoin(Bitcoin const &copy)
+{
+    *this = copy;
+}
+
+Bitcoin &Bitcoin::operator=(Bitcoin const &copy)
+{
+    this->input = copy.input;
+    this->values_data = copy.values_data;
+    return (*this);
+}
 
 Bitcoin::~Bitcoin() {}
 
