@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/30 12:50:41 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/07/05 13:29:54 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/07/05 13:47:34 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ int Bitcoin::get_line()
         if (i != 0 && line.size() > 0)
         {
             if (line.find(" | ") == std::string::npos)
-                return (std::cout << "Error : Invalid line, the format must be 'date | value' => '"<< line <<"'" << std::endl, i++, 0);
+                return (std::cout << "Error : bad input, the format must be 'date | value' => '"<< line <<"'" << std::endl, i++, 0);
             std::string date = line.substr(0, line.find(" | "));
             std::string value = line.substr(line.find(" | ") + 3);
             for (size_t j = 0; j < value.length(); j++)
