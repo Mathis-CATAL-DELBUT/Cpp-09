@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   BitcoinExchange.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mcatal-d <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/30 12:50:41 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/06/30 17:36:09 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/07/04 15:32:07 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 Bitcoin::Bitcoin() {}
 
-Bitcoin::Bitcoin(const char* input) : input(input) {}
+Bitcoin::Bitcoin(const std::string inputa) : input(inputa) {}
 
 // Bitcoin::Bitcoin(std::string input, Bitcoin const &copy)
 // {
@@ -26,61 +26,94 @@ Bitcoin::Bitcoin(const char* input) : input(input) {}
 
 Bitcoin::~Bitcoin() {}
 
-int Bitcoin::get_line()
+bool estChiffre(char c) {
+    return c >= '0' && c <= '9';
+}
+
+bool check_date(std::string date)
 {
-    std::ifstream file(input);
+    int annee = 0, mois = 0, jour = 0;
+    
+    if (date.length() != 10 || date[4] != '-' || date[7] != '-') 
+        return false;
+    for (int i = 0; i < 4; ++i) {
+        if (!estChiffre(date[i]))
+            return false;
+        annee *= 10 + (date[i] - '0');
+    }
+    for (int i = 5; i < 7; ++i) {
+        if (!estChiffre(date[i]))
+            return false;
+        mois *= 10 + (date[i] - '0');
+    }
+    for (int i = 8; i < 10; ++i) {
+        if (!estChiffre(date[i]))
+            return false;
+        jour *= 10 + (date[i] - '0');
+    }
+    if ((annee < 0 || mois < 1 || mois > 12 || jour < 1 || jour > 31) ||
+        ((mois == 4 || mois == 6 || mois == 9 || mois == 11) && jour > 30))
+        return false;
+    if (mois == 2) {
+        bool estAnneeBissextile = (annee % 4 == 0 && annee % 100 != 0) || (annee % 400 == 0);
+        if ((estAnneeBissextile && jour > 29) || (!estAnneeBissextile && jour > 28))
+            return false;
+    }
+
+    return true;
+}
+
+bool check_value(std::string value)
+{
+    (void)value;
+    return true;
+}
+
+void Bitcoin::parsing(char separator)
+{
+    std::ifstream file(input.c_str());
     std::string line;
-    static int i = 0;
+    std::string temp;
+    double value;
+
     if (file.is_open())
     {
-        for(int j = i; j > 0; j--)
-            std::getline(file, line);
-        if (!std::getline(file, line)) {
-            file.close();
-            return (1);
+        while (getline(file, line, separator))
+        {
+            if (line.find('\n') < line.find('|'))
+                line = line.substr(line.find('\n') + 1);
+            temp = line;
+            std::regex pattern ("^\\d{4}-\\d{2}-\\d{2}\\s$");
+            if (!std::regex_match(temp, pattern))
+                continue;
+            temp = line.substr(0, line.find(' '));
+            getline(file, line, '\n');
+            std::regex pattern2 ("^(?:[0-9]{1,3}(?:\\.[0-9]+)?|1000(?:\\.0+)?)$");
+            line = line.substr(1);
+            if (!std::regex_match(line, pattern2))
+                continue;
+            value = std::stod(line);
+            if(temp.length() >= 10 && line.length() > 0)
+                values_input.insert(std::pair<std::string, double>(temp, value));
+            line.clear();
+            temp.clear();
         }
         file.close();
     }
     else
-    {
         std::cout << "Error: File not found" << std::endl;
-        return (1);
-    }
-    if (i == 0 && strcmp(line.c_str(), "date | value") != 0)
-    {
-        std::cout << "Error: Invalid file" << std::endl;
-        return (1);
-    }
-    else
-    {
-        if (i != 0 && line.size() > 0)
-        {
-            if (line.find(" | ") == std::string::npos)
-                return (std::cout << /*"Error : Invalid line"*/ ""<< std::endl, i++, 0);
-            std::string date = line.substr(0, line.find(" | "));
-            std::string value = line.substr(line.find(" | ") + 3, line.size());
-            static std::map<std::string, double>::iterator it = values_input.begin();
-            double value_double;
-            std::stringstream iss(value);
-            iss >> value_double;
-            values_input.insert(it, std::pair<std::string, double>(date, value_double));
-            it++;
-            std::cout << "Date: '" << date << "'" << std::endl;
-            std::cout << "Value: '" << value_double << "'" << std::endl;
-        }
-    }
-    i++;
-    line.clear();
-    return (0);
 }
+
+
 
 void Bitcoin::print_map()
 {
-    std::map<std::string, double>::iterator it = values_input.begin();
-    std::map<std::string, double>::iterator ite = values_input.end();
+    std::multimap<std::string, double>::iterator it = values_input.begin();
+    std::multimap<std::string, double>::iterator ite = values_input.end();
     while (it != ite)
     {
-        std::cout << it->first << " | " << it->second << std::endl;
+        std::cout << "[" << it->first << "] | [";
+        std::cout << it->second << "]" << std::endl;
         it++;
     }
 }
