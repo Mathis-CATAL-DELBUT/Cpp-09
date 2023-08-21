@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/18 09:52:03 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/08/21 12:02:58 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/08/21 13:02:35 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int RPN::push_to_stack()
         if (isdigit(this->input[i]))
         {
             calculator.push(this->input[i] - '0');
-            std::cout << "push in stack : " << input[i] << std::endl;   
+            // std::cout << "push in stack : " << input[i] << std::endl;   
         }
         else if (isoperator(this->input[i]))
         {
@@ -67,15 +67,17 @@ int RPN::calcul(int i)
 {
     int res = 0;
     int size = this->calculator.size();
+
+    if (size < 2)
+        return 1;
+        
     int first_elt = calculator.top();
     calculator.pop();
     int second_elt = calculator.top();
     calculator.pop();
 
-    std::cout << "premier elt: " << first_elt << " / " << "second elt: " << second_elt << " / size : "<< size << std::endl;
+    // std::cout << "premier elt: " << first_elt << " / " << "second elt: " << second_elt << " / size : "<< size << std::endl;
     
-    if (size < 2)// || !isdigit(first_elt + '0') || !isdigit(second_elt + '0'))
-        return 1;
     if (this->input[i] == '*')
         res = (second_elt) * (first_elt); 
     if (this->input[i] == '-')
@@ -89,6 +91,6 @@ int RPN::calcul(int i)
         res = (second_elt) / (first_elt); 
     }
     calculator.push(res);
-    std::cout << "apres cette opration : " << this->input[i] << " le resultat est : " << res << std::endl;
+    // std::cout << "apres cette opration : " << this->input[i] << " le resultat est : " << res << std::endl;
     return 0;
 }
