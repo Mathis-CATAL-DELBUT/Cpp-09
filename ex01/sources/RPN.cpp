@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/18 09:52:03 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/08/18 11:01:13 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/08/21 12:02:58 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,73 @@ RPN::RPN(RPN const &copy)
 {*this = copy;}
 
 RPN RPN::operator=(RPN const &copy)
-{this->input = copy.input;}
+{
+    this->input = copy.input;
+    return *this;
+}
 
-int RPN::do_calcul()
+int RPN::push_to_stack()
 {
     int i = 0;
-    while (this->input[i]) // parcourir le input pour mettre la premiere fois dans la pile calculator 
+
+    input.erase(std::remove_if(input.begin(), input.end(), ::isspace), input.end());
+    while (this->input[i])
     {
-        if (isdigit(this->input[i]) || isoperator(this->input[i]))
-            //push dans calculator
+        // std::cout << "input[i] = " << input[i] << std::endl;
+        if (isdigit(this->input[i]))
+        {
+            calculator.push(this->input[i] - '0');
+            std::cout << "push in stack : " << input[i] << std::endl;   
+        }
+        else if (isoperator(this->input[i]))
+        {
+            if (calcul(i))
+                return -1;
+        }
         else
-            return -1; //erreur
+            return -1;
+        i++;
     }
+    if (calculator.size() != 1)
+        return -1;
+    std::cout << calculator.top() << std::endl;
+    return 0;
+}
+
+int RPN::isoperator(char c)
+{
+    if (c == '-' || c == '*' || c == '/' || c == '+')
+        return 1;
+    return 0;
+}
+
+
+int RPN::calcul(int i)
+{
+    int res = 0;
+    int size = this->calculator.size();
+    int first_elt = calculator.top();
+    calculator.pop();
+    int second_elt = calculator.top();
+    calculator.pop();
+
+    std::cout << "premier elt: " << first_elt << " / " << "second elt: " << second_elt << " / size : "<< size << std::endl;
+    
+    if (size < 2)// || !isdigit(first_elt + '0') || !isdigit(second_elt + '0'))
+        return 1;
+    if (this->input[i] == '*')
+        res = (second_elt) * (first_elt); 
+    if (this->input[i] == '-')
+        res = (second_elt) - (first_elt); 
+    if (this->input[i] == '+')
+        res = (second_elt) + (first_elt); 
+    if (this->input[i] == '/')
+    {
+        if (first_elt == '0')
+            return 1;
+        res = (second_elt) / (first_elt); 
+    }
+    calculator.push(res);
+    std::cout << "apres cette opration : " << this->input[i] << " le resultat est : " << res << std::endl;
+    return 0;
 }
