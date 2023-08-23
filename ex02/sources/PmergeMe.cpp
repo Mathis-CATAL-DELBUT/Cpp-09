@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 13:56:37 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/08/23 14:31:14 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/08/23 17:08:59 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,23 @@ void printVector(const std::vector<std::pair<int, int> >& vec) {
     std::cout << std::endl;
 }
 
-void   PmergeMe::makePair(char **argv)
+int     PmergeMe::checkArg(char *str)
+{
+    int i = -1;
+    while (str[++i])
+        if (str[i] < '0' || str[i] > '9')
+            return 1;
+    return 0;       
+}
+
+int     PmergeMe::makePair(char **argv)
 {
     int i = 1;
     
     while (argv[i] && argv[i + 1]) //Faire les premieres paires
     {
+        if (checkArg(argv[i]) == 1 || checkArg(argv[i + 1]) == 1)
+            return -1;
         pairVector.push_back(std::make_pair(atoi(argv[i]), atoi(argv[i + 1])));
         i += 2;
     }    
@@ -45,7 +56,11 @@ void   PmergeMe::makePair(char **argv)
         if (it->first < it->second)
             ft_swap(*it);
     if (argv[i]) //Si il reste un element
+	{
+		if (checkArg(argv[i]) == 1)
+			return -1;
         pairVector.push_back(std::make_pair(atoi(argv[i]), -1));
+	}
     
     // AFFICHAGE
     // for (std::vector<std::pair<int, int> >::iterator it = pairVector.begin(); it != pairVector.end(); ++it)
@@ -53,10 +68,53 @@ void   PmergeMe::makePair(char **argv)
     // if (argv[i])
     //     std::cout << "Reste [" << argv[i] << "]" << std::endl;
 
-
-    printVector(Ford_Johnson(this->pairVector));
+    
+    this->pairVector = Ford_Johnson(this->pairVector);
+    printVector(this->pairVector);
+    jacob();
+    return 0;
 }
 
+int rechercheDichotomique(std::vector<int>& vec, int num) {
+    int left = 0;
+    int right = vec.size() - 1;
+    int midle = 0;
+
+    while (left <= right) 
+	{
+        midle = left + (right - left) / 2;
+        if (vec[midle] == num) 
+		{
+            while (midle > 0 && vec[midle - 1] == num) 
+                --midle;
+            vec.insert(vec.begin() + midle, num);
+            return midle;
+        } 
+		else if (vec[midle] < num)
+            left = midle + 1;
+        else
+            right = midle - 1;
+    }
+    vec.insert(vec.begin() + midle, num);
+    return midle;
+}
+
+void    PmergeMe::jacob()
+{
+    std::vector<std::pair<int, int> >::iterator it;
+    std::vector<int>::iterator itt;
+    it = this->pairVector.begin();
+    while (it != pairVector.end())
+    {
+		if (it == pairVector.begin())
+			this->vecResult.push_back(it->second);
+        this->vecResult.push_back(it->first);
+		it++;
+	}
+    itt = this->vecResult.begin();
+    while(itt++ != vecResult.end() - 1)
+		std::cout << *itt << " ";
+}
 
 std::vector<std::pair<int, int> > PmergeMe::Ford_Johnson(std::vector<std::pair<int, int> > vectorPairOfPair)
 {
