@@ -6,14 +6,14 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 13:56:37 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/08/23 17:08:59 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/08/24 14:38:26 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PmergeMe.hpp"
 #include <stdlib.h>
 
-const int PmergeMe::jacobsthalArray[15] = {0, 1, 1, 3, 5, 11, 21, 43, 85, 171, 341, 683, 1365, 2731, 5461};
+const int PmergeMe::jacobsthalArray[15] = {1, 3, 5, 11, 21, 43, 85, 171, 341, 683, 1365, 2731, 5461, 10923, 21845};
 
 
 PmergeMe::PmergeMe(){};
@@ -75,14 +75,14 @@ int     PmergeMe::makePair(char **argv)
     return 0;
 }
 
-int rechercheDichotomique(std::vector<int>& vec, int num) {
+int PmergeMe::rechercheDichotomique(std::vector<int>& vec, int num) 
+{
     int left = 0;
     int right = vec.size() - 1;
-    int midle = 0;
 
     while (left <= right) 
 	{
-        midle = left + (right - left) / 2;
+        int midle = left + (right - left) / 2;
         if (vec[midle] == num) 
 		{
             while (midle > 0 && vec[midle - 1] == num) 
@@ -95,25 +95,90 @@ int rechercheDichotomique(std::vector<int>& vec, int num) {
         else
             right = midle - 1;
     }
-    vec.insert(vec.begin() + midle, num);
-    return midle;
+    vec.insert(vec.begin() + left, num);
+    return left;
+}
+
+int found_jacobsthal(int nb_elt)
+{
+    static int i = 0;
+    int tab_jacob[15] = {1, 3, 5, 11, 21, 43, 85, 171, 341, 683, 1365, 2731, 5461, 10923, 21845};
+    while (i < 15)
+    {
+        if (nb_elt >= tab_jacob[i])
+            return i++, tab_jacob[i - 1];
+        i++;
+    }
+    return 0;
 }
 
 void    PmergeMe::jacob()
 {
-    std::vector<std::pair<int, int> >::iterator it;
-    std::vector<int>::iterator itt;
-    it = this->pairVector.begin();
-    while (it != pairVector.end())
+    std::vector<std::pair<int, int> >::iterator it_vec_pair = this->pairVector.begin();
+    std::vector<int>::iterator                  it_vec_int;
+    std::vector<std::pair<int, int> >::iterator it_jacob;
+    std::vector<std::pair<int, int> >::iterator it_jacob_save;
+    std::vector<std::pair<int, int> >::iterator it_jacob_save_save;
+    
+    this->unsorted_size = this->pairVector.size();
+    while (it_vec_pair != pairVector.end()) // mettre les plus grand en premier
     {
-		if (it == pairVector.begin())
-			this->vecResult.push_back(it->second);
-        this->vecResult.push_back(it->first);
-		it++;
+		if (it_vec_pair == pairVector.begin())
+			this->vecResult.push_back(it_vec_pair->second);
+        this->vecResult.push_back(it_vec_pair->first);
+		it_vec_pair++;
 	}
-    itt = this->vecResult.begin();
-    while(itt++ != vecResult.end() - 1)
-		std::cout << *itt << " ";
+
+    //AFFICHAGE
+    for (it_vec_int = vecResult.begin(); it_vec_int != vecResult.end(); ++it_vec_int)
+        std::cout << *it_vec_int << " ";
+    std::cout << "vecResult : " << std::endl;
+    
+
+        it_jacob = this->pairVector.begin() + found_jacobsthal(this->unsorted_size);
+        it_jacob_save = it_jacob;
+        
+
+
+            std::cout << "it_jacob->second = " << it_jacob->second << std::endl;
+            std::cout << "it_jacob_save->second = " << it_jacob_save->second << std::endl;
+            rechercheDichotomique(this->vecResult, it_jacob->second);
+            std::cout << "vecResult : " << std::endl;
+            for (it_vec_int = vecResult.begin(); it_vec_int != vecResult.end(); ++it_vec_int)
+                std::cout << *it_vec_int << " ";
+            std::cout << std::endl;
+            std::cout << "Element qui vient d'etre ajoute : " << it_jacob->second << std::endl;
+            std::cout << std::endl;
+            it_jacob = it_jacob - 1;
+
+
+    int test;
+    while (this->vecResult.size() < this->pairVector.size() * 2)
+    {
+        test = found_jacobsthal(this->unsorted_size);
+        if (test == 0)
+            it_jacob = it_jacob_save_save + 1;
+        else
+            it_jacob = this->pairVector.begin() + test;
+        it_jacob_save_save = it_jacob;
+        while (it_jacob > it_jacob_save)
+        {
+            std::cout << "it_jacob->second = " << it_jacob->second << std::endl;
+            std::cout << "it_jacob_save->second = " << it_jacob_save->second << std::endl;
+            rechercheDichotomique(this->vecResult, it_jacob->second);
+            std::cout << "vecResult : " << std::endl;
+            for (it_vec_int = vecResult.begin(); it_vec_int != vecResult.end(); ++it_vec_int)
+                std::cout << *it_vec_int << " ";
+            std::cout << std::endl;
+            std::cout << "Element qui vient d'etre ajoute : " << it_jacob->second << std::endl;
+            std::cout << std::endl;
+            it_jacob = it_jacob - 1;
+        }
+        it_jacob_save = it_jacob_save_save;
+        std::cout << "size = " << this->vecResult.size() << std::endl;
+    }
+    // std::cout << "jacob = " << it_jacob->second << std::endl;
+
 }
 
 std::vector<std::pair<int, int> > PmergeMe::Ford_Johnson(std::vector<std::pair<int, int> > vectorPairOfPair)
