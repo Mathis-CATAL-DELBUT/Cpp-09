@@ -6,15 +6,12 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 13:56:37 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/08/24 14:38:26 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/08/24 15:33:32 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PmergeMe.hpp"
 #include <stdlib.h>
-
-const int PmergeMe::jacobsthalArray[15] = {1, 3, 5, 11, 21, 43, 85, 171, 341, 683, 1365, 2731, 5461, 10923, 21845};
-
 
 PmergeMe::PmergeMe(){};
 PmergeMe::~PmergeMe(){};
@@ -25,10 +22,13 @@ void PmergeMe::ft_swap(std::pair<int, int>& pair)
     pair.first = pair.second;
     pair.second = tmp; 
 }
-void printVector(const std::vector<std::pair<int, int> >& vec) {
-    for (size_t i = 0; i < vec.size(); ++i) {
-        std::cout << "(" << vec[i].first << ", " << vec[i].second << ") ";
-    }
+void PmergeMe::printFinalVector()
+{
+    std::vector<int>::const_iterator it = this->vecResult.begin();
+    std::cout << "After:    ";
+
+    while (it != this->vecResult.end())
+        std::cout << *it++ << " ";
     std::cout << std::endl;
 }
 
@@ -45,33 +45,26 @@ int     PmergeMe::makePair(char **argv)
 {
     int i = 1;
     
-    while (argv[i] && argv[i + 1]) //Faire les premieres paires
+    while (argv[i] && argv[i + 1])
     {
         if (checkArg(argv[i]) == 1 || checkArg(argv[i + 1]) == 1)
             return -1;
         pairVector.push_back(std::make_pair(atoi(argv[i]), atoi(argv[i + 1])));
         i += 2;
     }    
-    for (std::vector<std::pair<int, int> >::iterator it = pairVector.begin(); it != pairVector.end(); ++it) //Mettre le plus grand a gauche
+    for (std::vector<std::pair<int, int> >::iterator it = pairVector.begin(); it != pairVector.end(); ++it)
         if (it->first < it->second)
             ft_swap(*it);
-    if (argv[i]) //Si il reste un element
+    if (argv[i])
 	{
 		if (checkArg(argv[i]) == 1)
 			return -1;
         pairVector.push_back(std::make_pair(atoi(argv[i]), -1));
 	}
-    
-    // AFFICHAGE
-    // for (std::vector<std::pair<int, int> >::iterator it = pairVector.begin(); it != pairVector.end(); ++it)
-    //     std::cout << "Pair [" << it->first << "," << it->second << "]" << std::endl;
-    // if (argv[i])
-    //     std::cout << "Reste [" << argv[i] << "]" << std::endl;
-
-    
     this->pairVector = Ford_Johnson(this->pairVector);
-    printVector(this->pairVector);
-    jacob();
+    jacobsthal();
+    if (*vecResult.begin() == -1)
+        this->vecResult.erase(this->vecResult.begin());
     return 0;
 }
 
@@ -112,73 +105,42 @@ int found_jacobsthal(int nb_elt)
     return 0;
 }
 
-void    PmergeMe::jacob()
+void    PmergeMe::jacobsthal()
 {
     std::vector<std::pair<int, int> >::iterator it_vec_pair = this->pairVector.begin();
     std::vector<int>::iterator                  it_vec_int;
     std::vector<std::pair<int, int> >::iterator it_jacob;
     std::vector<std::pair<int, int> >::iterator it_jacob_save;
     std::vector<std::pair<int, int> >::iterator it_jacob_save_save;
+    int found_jacob;
     
     this->unsorted_size = this->pairVector.size();
-    while (it_vec_pair != pairVector.end()) // mettre les plus grand en premier
+    while (it_vec_pair != pairVector.end())
     {
 		if (it_vec_pair == pairVector.begin())
 			this->vecResult.push_back(it_vec_pair->second);
         this->vecResult.push_back(it_vec_pair->first);
 		it_vec_pair++;
 	}
-
-    //AFFICHAGE
-    for (it_vec_int = vecResult.begin(); it_vec_int != vecResult.end(); ++it_vec_int)
-        std::cout << *it_vec_int << " ";
-    std::cout << "vecResult : " << std::endl;
-    
-
-        it_jacob = this->pairVector.begin() + found_jacobsthal(this->unsorted_size);
-        it_jacob_save = it_jacob;
-        
-
-
-            std::cout << "it_jacob->second = " << it_jacob->second << std::endl;
-            std::cout << "it_jacob_save->second = " << it_jacob_save->second << std::endl;
-            rechercheDichotomique(this->vecResult, it_jacob->second);
-            std::cout << "vecResult : " << std::endl;
-            for (it_vec_int = vecResult.begin(); it_vec_int != vecResult.end(); ++it_vec_int)
-                std::cout << *it_vec_int << " ";
-            std::cout << std::endl;
-            std::cout << "Element qui vient d'etre ajoute : " << it_jacob->second << std::endl;
-            std::cout << std::endl;
-            it_jacob = it_jacob - 1;
-
-
-    int test;
+    it_jacob = this->pairVector.begin() + found_jacobsthal(this->unsorted_size);
+    it_jacob_save = it_jacob;
+    rechercheDichotomique(this->vecResult, it_jacob->second);
+    it_jacob = it_jacob - 1;
     while (this->vecResult.size() < this->pairVector.size() * 2)
     {
-        test = found_jacobsthal(this->unsorted_size);
-        if (test == 0)
+        found_jacob = found_jacobsthal(this->unsorted_size);
+        if (found_jacob == 0)
             it_jacob = it_jacob_save_save + 1;
         else
-            it_jacob = this->pairVector.begin() + test;
+            it_jacob = this->pairVector.begin() + found_jacob;
         it_jacob_save_save = it_jacob;
         while (it_jacob > it_jacob_save)
         {
-            std::cout << "it_jacob->second = " << it_jacob->second << std::endl;
-            std::cout << "it_jacob_save->second = " << it_jacob_save->second << std::endl;
             rechercheDichotomique(this->vecResult, it_jacob->second);
-            std::cout << "vecResult : " << std::endl;
-            for (it_vec_int = vecResult.begin(); it_vec_int != vecResult.end(); ++it_vec_int)
-                std::cout << *it_vec_int << " ";
-            std::cout << std::endl;
-            std::cout << "Element qui vient d'etre ajoute : " << it_jacob->second << std::endl;
-            std::cout << std::endl;
             it_jacob = it_jacob - 1;
         }
         it_jacob_save = it_jacob_save_save;
-        std::cout << "size = " << this->vecResult.size() << std::endl;
     }
-    // std::cout << "jacob = " << it_jacob->second << std::endl;
-
 }
 
 std::vector<std::pair<int, int> > PmergeMe::Ford_Johnson(std::vector<std::pair<int, int> > vectorPairOfPair)
