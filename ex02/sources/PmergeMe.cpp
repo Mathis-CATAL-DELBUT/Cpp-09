@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PmergeMe.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 13:56:37 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/08/24 22:58:04 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/08/25 15:31:50 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,9 @@ void PmergeMe::ft_swapVector(std::pair<int, int>& pair)
 }
 void PmergeMe::printFinalVector()
 {
-    std::vector<int>::const_iterator it = this->vecResultVector.begin();
     std::cout << "After:    ";
-
-    while (it != this->vecResultVector.end())
-        std::cout << *it++ << " ";
+    for (std::vector<int>::iterator it = vecResultVector.begin(); it != vecResultVector.end(); ++it)
+        std::cout << *it << " ";
     std::cout << std::endl;
 }
 
@@ -124,18 +122,19 @@ void    PmergeMe::jacobsthalVector()
         this->vecResultVector.push_back(it_vec_pair->first);
 		it_vec_pair++;
 	}
+    if (this->vecResultVector.size() == this->pairVector.size() * 2)
+        return;
     it_jacob = this->pairVector.begin() + found_jacobsthal(this->unsorted_sizeVector);
     it_jacob_save = it_jacob;
     rechercheDichotomiqueVector(this->vecResultVector, it_jacob->second);
     it_jacob = it_jacob - 1;
     while (this->vecResultVector.size() < this->pairVector.size() * 2)
     {
-        found_jacob = found_jacobsthal(this->unsorted_sizeVector
-);
+        found_jacob = found_jacobsthal(this->unsorted_sizeVector);
         if (found_jacob == 0)
             it_jacob = it_jacob_save_save + 1;
         else
-            it_jacob = this->pairVector.begin() + found_jacob;
+            it_jacob = this->pairVector.begin() + found_jacob - 1;
         it_jacob_save_save = it_jacob;
         while (it_jacob > it_jacob_save)
         {
@@ -250,6 +249,9 @@ void    PmergeMe::jacobsthalDeque()
     int found_jacob;
     
     this->unsorted_sizeDeque = this->pairDeque.size();
+    for(std::deque<std::pair<int, int> >::iterator it = this->pairDeque.begin(); it != this->pairDeque.end(); ++it)
+        std::cout << it->first << " " << it->second << std::endl;
+    std::cout << std::endl;
     while (it_vec_pair != pairDeque.end())
     {
 		if (it_vec_pair == pairDeque.begin())
@@ -257,19 +259,26 @@ void    PmergeMe::jacobsthalDeque()
         this->vecResultDeque.push_back(it_vec_pair->first);
 		it_vec_pair++;
 	}
-    it_jacob = this->pairDeque.begin() + found_jacobsthal(this->unsorted_sizeDeque);
+    if (this->vecResultDeque.size() == this->pairDeque.size() * 2)
+        return;
+    it_jacob = this->pairDeque.begin() + found_jacobsthal(this->unsorted_sizeDeque) + 1;
     it_jacob_save = it_jacob;
+    it_jacob_save_save = it_jacob;
     rechercheDichotomiqueDeque(this->vecResultDeque, it_jacob->second);
     it_jacob = it_jacob - 1;
+    std::cout << "it_jacob -> second = " << it_jacob->second << std::endl;
     while (this->vecResultDeque.size() < this->pairDeque.size() * 2)
     {
-        found_jacob = found_jacobsthal(this->unsorted_sizeDeque
-);
+        found_jacob = found_jacobsthal(this->unsorted_sizeDeque);
         if (found_jacob == 0)
             it_jacob = it_jacob_save_save + 1;
         else
-            it_jacob = this->pairDeque.begin() + found_jacob;
+            it_jacob = this->pairDeque.begin() + found_jacob - 1;
         it_jacob_save_save = it_jacob;
+    for (std::deque<int>::iterator it = vecResultDeque.begin(); it != vecResultDeque.end(); ++it)
+        std::cout << *it << " ";
+    std::cout << std::endl;
+    std::cout << "it_jacob->second = " << it_jacob->second << std::endl;
         while (it_jacob > it_jacob_save)
         {
             rechercheDichotomiqueDeque(this->vecResultDeque, it_jacob->second);
@@ -278,6 +287,7 @@ void    PmergeMe::jacobsthalDeque()
         it_jacob_save = it_jacob_save_save;
     }
 }
+
 
 std::deque<std::pair<int, int> > PmergeMe::Ford_JohnsonDeque(std::deque<std::pair<int, int> > dequePairOfPair)
 {

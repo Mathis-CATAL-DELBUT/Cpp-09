@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 14:13:31 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/08/24 22:58:27 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/08/25 14:55:45 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int     main(int argc, char **argv)
     std::cout << "///" << std::endl;
     objVector.printFinalVector();
     std::cout << "///" << std::endl;
-    std::cout << "Time to process a range of " << argc - 1 << " elements with std::vector : " << durationVector << "us" << std::endl;
-    std::cout << "Time to process a range of " << argc - 1 << " elements with std::deque : " << durationDeque << "us" << std::endl;
+    std::cout << "Time to process a range of " << argc - 1 << " elements with std::vector : " << durationVector << " us" << std::endl;
+    std::cout << "Time to process a range of " << argc - 1 << " elements with std::deque  : " << durationDeque << " us" << std::endl;
     std::cout << "-----------------------------------------" << std::endl;
 }
