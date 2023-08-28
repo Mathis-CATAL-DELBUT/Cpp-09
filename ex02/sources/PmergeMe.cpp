@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 13:56:37 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/08/25 15:31:50 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/08/28 10:46:55 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,9 +249,6 @@ void    PmergeMe::jacobsthalDeque()
     int found_jacob;
     
     this->unsorted_sizeDeque = this->pairDeque.size();
-    for(std::deque<std::pair<int, int> >::iterator it = this->pairDeque.begin(); it != this->pairDeque.end(); ++it)
-        std::cout << it->first << " " << it->second << std::endl;
-    std::cout << std::endl;
     while (it_vec_pair != pairDeque.end())
     {
 		if (it_vec_pair == pairDeque.begin())
@@ -266,7 +263,6 @@ void    PmergeMe::jacobsthalDeque()
     it_jacob_save_save = it_jacob;
     rechercheDichotomiqueDeque(this->vecResultDeque, it_jacob->second);
     it_jacob = it_jacob - 1;
-    std::cout << "it_jacob -> second = " << it_jacob->second << std::endl;
     while (this->vecResultDeque.size() < this->pairDeque.size() * 2)
     {
         found_jacob = found_jacobsthal(this->unsorted_sizeDeque);
@@ -275,10 +271,6 @@ void    PmergeMe::jacobsthalDeque()
         else
             it_jacob = this->pairDeque.begin() + found_jacob - 1;
         it_jacob_save_save = it_jacob;
-    for (std::deque<int>::iterator it = vecResultDeque.begin(); it != vecResultDeque.end(); ++it)
-        std::cout << *it << " ";
-    std::cout << std::endl;
-    std::cout << "it_jacob->second = " << it_jacob->second << std::endl;
         while (it_jacob > it_jacob_save)
         {
             rechercheDichotomiqueDeque(this->vecResultDeque, it_jacob->second);
